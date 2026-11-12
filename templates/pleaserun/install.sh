@@ -66,11 +66,11 @@ version_sysv() {
 
 has_systemd() {
   # Some OS vendors put systemd in ... different places ...
-  [ -d "/lib/systemd/system/" -o -d "/usr/lib/systemd/system" ] && silent which systemctl
+  [ -d "/lib/systemd/system/" -o -d "/usr/lib/systemd/system" ] && silent command -v systemctl
 }
 
 has_upstart() {
-  [ -d "/etc/init" ] && silent which initctl
+  [ -d "/etc/init" ] && silent command -v initctl
 }
 
 has_sysv() {
@@ -78,15 +78,15 @@ has_sysv() {
 }
 
 #has_freebsd_rcng() {
-  #[ -d "/etc/rc.d" ] && silent which rcorder
+  #[ -d "/etc/rc.d" ] && silent command -v rcorder
 #}
 
 has_daemontools() {
-  [ -d "/service" ] && silent which sv
+  [ -d "/service" ] && silent command -v sv
 }
 
 has_launchd() { 
-  [ -d "/Library/LaunchDaemons" ] && silent which launchtl
+  [ -d "/Library/LaunchDaemons" ] && silent command -v launchtl
 }
 
 install_help() {
