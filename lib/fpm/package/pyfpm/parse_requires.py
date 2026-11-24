@@ -11,7 +11,7 @@ import sys
 
 # Process environment markers, if any, and produce a list of requirements for the current environment.
 def evaluate_requirements(fd):
-    all_requirements = [packaging.requirements.Requirement(line) for line in sys.stdin]
+    all_requirements = [packaging.requirements.Requirement(line.strip()) for line in sys.stdin]
     default_env = packaging.markers.default_environment()
     for req in all_requirements:
         if req.marker is None or req.marker.evaluate(environment=default_env):
