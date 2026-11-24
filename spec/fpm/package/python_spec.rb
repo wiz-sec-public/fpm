@@ -160,11 +160,11 @@ describe FPM::Package::Python do
 
       it "it should prefix requirements.txt" do
         subject.input(example_dir)
-        insist { subject.dependencies.sort } == ["python-rtxt-dep1 > 0.1", "python-rtxt-dep2 = 0.1", "python-rtxt-dep4  "]
+        insist { subject.dependencies.sort } == ["python-fpm-test-fixture-dep1 > 0.1", "python-rtxt-dep2 = 0.1", "python-rtxt-dep4  "]
       end
 
       it "it should exclude the dependency" do
-        subject.attributes[:python_disable_dependency] = "rtxt-dep1"
+        subject.attributes[:python_disable_dependency] = "fpm-test-fixture-dep1"
         subject.input(example_dir)
         insist { subject.dependencies.sort } == ["python-rtxt-dep2 = 0.1", "python-rtxt-dep4  "]
       end
@@ -177,11 +177,11 @@ describe FPM::Package::Python do
 
       it "it should load requirements.txt" do
         subject.input(example_dir)
-        insist { subject.dependencies.sort } == ["rtxt-dep1 > 0.1", "rtxt-dep2 = 0.1", "rtxt-dep4  "]
+        insist { subject.dependencies.sort } == ["fpm-test-fixture-dep1 > 0.1", "rtxt-dep2 = 0.1", "rtxt-dep4  "]
       end
 
       it "it should exclude the dependency" do
-        subject.attributes[:python_disable_dependency] = "rtxt-dep1"
+        subject.attributes[:python_disable_dependency] = "fpm-test-fixture-dep1"
         subject.input(example_dir)
         insist { subject.dependencies.sort } == ["rtxt-dep2 = 0.1", "rtxt-dep4  "]
       end
