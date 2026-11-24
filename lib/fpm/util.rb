@@ -38,7 +38,7 @@ module FPM::Util
     shell = ENV["SHELL"]
     return "/bin/sh" if shell.nil? || shell.empty?
     return shell
-  end
+  end # def default_shell
 
   ############################################################################
   # execmd([env,] cmd [,opts])
@@ -136,7 +136,7 @@ module FPM::Util
       raise ExecutableNotFound.new(program)
     end
 
-    logger.debug("Running command", :args => args2)
+    logger.info("Running command", :args => args2)
 
     stdout_r, stdout_w = IO.pipe
     stderr_r, stderr_w = IO.pipe
@@ -250,7 +250,7 @@ module FPM::Util
       end
     end
     # If no combination of ar and options omits timestamps, fall back to default.
-    @@ar_cmd = ["ar", "-qc"]
+    @@ar_cmd = ["ar", "-qcS"]
     FileUtils.rm_f([testarchive, emptyfile])
     return @@ar_cmd
   end # def ar_cmd
@@ -259,7 +259,7 @@ module FPM::Util
   def ar_cmd_deterministic?
     ar_cmd if not defined? @@ar_cmd_deterministic
     return @@ar_cmd_deterministic
-  end
+  end # def ar_cmd_deterministic?
 
   # Get the recommended 'tar' command for this platform.
   def tar_cmd
@@ -306,7 +306,7 @@ module FPM::Util
   def tar_cmd_supports_sort_names_and_set_mtime?
     tar_cmd if not defined? @@tar_cmd_deterministic
     return @@tar_cmd_deterministic
-  end
+  end # def tar_cmd_supports_sort_names_and_set_mtime?
 
   def copy_metadata(source, destination)
     source_stat = File::lstat(source)
@@ -332,7 +332,15 @@ module FPM::Util
 
 
   def copy_entry(src, dst, preserve=false, remove_destination=false)
-    case File.ftype(src)
+    st = File.lstat(src)
+
+    filetype = if st.ftype == "file" && st.nlink > 1
+      "hardlink"
+    else
+      st.ftype
+    end
+
+    case filetype
     when 'fifo'
       if File.respond_to?(:mkfifo)
         File.mkfifo(dst)
@@ -350,18 +358,23 @@ module FPM::Util
       raise  UnsupportedSpecialFile.new("File is device which fpm doesn't know how to copy (#{File.ftype(src)}): #{src}")
     when 'directory'
       FileUtils.mkdir(dst) unless File.exist? dst
-    else
-      # if the file with the same dev and inode has been copied already -
+    when 'hardlink'
+      # Handle hardlinks
+      # if the file with the same dev and inode has been copied already.
       # hard link it's copy to `dst`, otherwise make an actual copy
-      st = File.lstat(src)
       known_entry = copied_entries[[st.dev, st.ino]]
       if known_entry
         FileUtils.ln(known_entry, dst)
+        logger.debug("Copying hardlink", :src => src, :dst => dst, :link => known_entry)
       else
         FileUtils.copy_entry(src, dst, preserve, false,
                              remove_destination)
         copied_entries[[st.dev, st.ino]] = dst
       end
+    else
+      # Normal file, just copy it.
+      FileUtils.copy_entry(src, dst, preserve, false,
+                           remove_destination)
     end # else...
   end # def copy_entry
 
@@ -439,7 +452,7 @@ module FPM::Util
       # Ruby 3.1.0 and newer
       return ERB.new(template_code, trim_mode: "-")
     end
-  end
+  end # def erbnew
 end # module FPM::Util
 
 require 'fpm/util/tar_writer'
