@@ -22,7 +22,7 @@ To make sure fpm is installed correctly, try running the following command::
 You should get some output like this, although the exact output will depend on which version of FPM you have installed.::
 
     % fpm --version
-    1.14.0
+    1.17.0
 
 Now you can go on to `using FPM! <getting-started.html>`_
 
@@ -36,6 +36,7 @@ Some package formats require other tools to be installed on your machine to be b
 
 * RPM: rpm/rpm-tools/rpm-build [This dependency might be removed in the future, see `issue #54`_ on github]
 * Snap: squashfs/squashfs-tools
+* Python: a requirements.txt file is provided to list Python dependencies: `$ pip install -r requirements.txt`
 
 .. _issue #54: https://github.com/jordansissel/fpm/issues/54
 
